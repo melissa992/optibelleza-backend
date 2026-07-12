@@ -1,0 +1,6 @@
+# Ignore local database and environment files
+test2.db
+.env
+.venv/
+__pycache__/
+*.pyc
