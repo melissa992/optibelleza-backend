@@ -5,9 +5,14 @@ from app.core.config import settings
 import os
 
 # Support Postgres (production) and a local SQLite fallback for demos/tests.
-# Use APP_ENV to decide: non-production -> sqlite, production -> postgres.
-if settings.app_env.lower() not in ("production", "prod"):
-    # Development / local: use a local file-based sqlite database.
+# Use APP_ENV to decide: production -> postgres when configured, otherwise sqlite.
+use_sqlite = (
+    settings.database_hostname.lower() == "sqlite"
+    or not settings.database_hostname
+    or settings.app_env.lower() not in ("production", "prod")
+)
+if use_sqlite:
+    # Development / local / fallback: use a local file-based sqlite database.
     db_path = settings.database_name or "./test2.db"
     SQLALCHEMY_DATABASE_URL = f"sqlite:///{os.path.abspath(db_path)}"
     # For SQLite, need check_same_thread=False when using with multiple threads.
