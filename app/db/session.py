@@ -6,10 +6,12 @@ import os
 
 # Support Postgres (production) and a local SQLite fallback for demos/tests.
 # Use APP_ENV to decide: production -> postgres when configured, otherwise sqlite.
+hostname = (settings.database_hostname or "").strip()
+app_env = (settings.app_env or "").lower()
 use_sqlite = (
-    settings.database_hostname.lower() == "sqlite"
-    or not settings.database_hostname
-    or settings.app_env.lower() not in ("production", "prod")
+    hostname == "sqlite"
+    or not hostname
+    or app_env not in ("production", "prod")
 )
 if use_sqlite:
     # Development / local / fallback: use a local file-based sqlite database.
