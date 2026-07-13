@@ -15,7 +15,9 @@ use_sqlite = (
 )
 if use_sqlite:
     # Development / local / fallback: use a local file-based sqlite database.
-    db_path = settings.database_name or "./test2.db"
+    # On Vercel serverless, writeable storage is under /tmp.
+    default_db_path = "/tmp/test2.db" if os.getenv("VERCEL") else "./test2.db"
+    db_path = settings.database_name or default_db_path
     SQLALCHEMY_DATABASE_URL = f"sqlite:///{os.path.abspath(db_path)}"
     # For SQLite, need check_same_thread=False when using with multiple threads.
     engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
